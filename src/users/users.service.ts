@@ -1,22 +1,52 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, HttpException, HttpStatus } from '@nestjs/common';
 import { User } from '../core/models/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import * as Validator from 'validatorjs';
+
+
+const validator = {
+  'login': 'required|email',
+  'password': 'min:8|max:16',
+};
+
+
 
 @Injectable()
 export class UsersService {
 
   constructor(@Inject('USERS_REPOSITORY') private usersRepository: typeof User){}
 
-  create(createUserDto: CreateUserDto) {
-
-    const user = new User();
-    user.login = createUserDto.login;
-    user.passwordhash = createUserDto.password;
+  async create(createUserDto: CreateUserDto) {
     
-    this.usersRepository.create(
-      Object.assign({} as User, { login: createUserDto.login, password: createUserDto.password }));
+    try {
+      const validacao: Validator = new Validator(createUserDto, validator);
+    
+      if (validacao.fails()) {
+        // console.log(validacao.errors.errors);
+        throw new HttpException('Validation failed', HttpStatus.NOT_ACCEPTABLE);
+      }
+      
+      const user = {} as User;
+      user.login = createUserDto.login;
+      user.password = createUserDto.password;
+      
+      await this.usersRepository.create(user);
+    } catch (error) {
+      throw error;
+    }
   }
 
+  /**
+   *  Find user by login
+   * 
+   * @param login 
+   */
+  async findOneByLogin(login: string) {
+    return await this.usersRepository.findOne({ where: { login } });
+  }
+
+
+  
   findAll(): Promise<User[]> {
     return this.usersRepository.findAll();
   }

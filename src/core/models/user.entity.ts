@@ -1,5 +1,5 @@
 import { AllowNull, AutoIncrement, BeforeCreate, Column, DataType, PrimaryKey, Table } from 'sequelize-typescript';
-import { generateHashPassword } from '../utils/hash.util';
+import { generateHashPassword, comparePasswords } from '../utils/hash.util';
 import { BaseModel } from './base-model.model';
 
 @Table({
@@ -30,6 +30,10 @@ export class User extends BaseModel<User> {
 
   @Column(DataType.VIRTUAL)
   password;
+
+  checarSenha(password) {
+    return comparePasswords(password, this.passwordhash);
+  }
 
   @BeforeCreate
   static async beforeCreateUser(user: User, options: any, err: any) {

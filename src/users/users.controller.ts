@@ -1,27 +1,21 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UsersService } from './users.service';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { Observable, of } from 'rxjs';
 import { User } from '../core/models/user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UsersService } from './users.service';
+import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
 
-  constructor(private usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
+ 
 
   @Get()
   async findAll(): Promise<User[]> {
     return this.usersService.findAll();
-  }
-
-  @Get('/teste')
-  teste(): Observable<string> {
-    return of('Teste');
   }
 
   

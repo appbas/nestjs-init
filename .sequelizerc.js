@@ -6,6 +6,3 @@ module.exports = {
   'migrations-path': resolve(__dirname, 'src', 'core', 'database', 'migrations'),
   'seeders-path': resolve(__dirname, 'src', 'core', 'database', 'seed')
 };
-
-
-console.log(resolve(__dirname, 'src', 'core', 'database', 'config', 'database.ts'));

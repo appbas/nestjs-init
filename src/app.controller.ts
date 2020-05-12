@@ -1,25 +1,22 @@
-import { Controller, Get, Req, Param, Query } from '@nestjs/common';
-import { AppService } from './app.service';
-import { Request } from 'express';
+import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { AuthService } from './core/auth/auth.service';
+import { LocalAuthGuard } from './core/auth/guards/local-auth.guard';
+import { CreateUserDto } from './users/dto/create-user.dto';
+import { UsersService } from './users/users.service';
 
-@Controller('/api')
+@Controller('/')
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly authService: AuthService, private readonly usersService: UsersService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Post('auth/login')
+  @UseGuards(LocalAuthGuard)
+  async login(@Request() req) {
+    return this.authService.login(req.user);
   }
 
-  @Get('/req')
-  findAll(@Req() request: Request): string {
-    console.log(request.query);
-    return `Test @Req() - ${request.query}`;
+  @Post('register')
+  async create(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.create(createUserDto);
   }
 
-  @Get('/q*ry')
-  finddParam(@Query() params): string {
-    console.log(params);
-    return `Test @Param() - ${params}`;
-  }
 }
