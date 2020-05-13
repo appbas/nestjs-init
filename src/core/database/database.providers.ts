@@ -1,5 +1,7 @@
 import { Sequelize } from 'sequelize-typescript';
 import { User } from '../models/user.entity';
+import { DotHour } from '../models/dothour.entity';
+import { Parameter } from '../models/parameter.entity';
 
 export const databaseProviders = [
   {
@@ -25,7 +27,7 @@ export const databaseProviders = [
         },
 
       });
-      sequelize.addModels([User]);
+      sequelize.addModels([User, DotHour, Parameter]);
       await sequelize.sync({
         schema: 'epw', force: false, alter: false
 
